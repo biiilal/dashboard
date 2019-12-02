@@ -1,25 +1,24 @@
-import React from 'react';
-import logo from './logo.svg';
+import React, { useState, useEffect } from 'react';
+import {
+  BrowserRouter as Router,
+  Switch,
+  Route,
+} from "react-router-dom";
 import './App.css';
-
+import Graph from './views/Graph'
+import Home from './views/Home'
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Welcome To Dashboard
-        </p>
-        <a
-          className="App-link"
-          href="https://msygo.com"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Synergo
-        </a>
-      </header>
-    </div>
+    <Router>
+      <Switch>
+        <Route path="/graph">
+          <Graph />
+        </Route>
+        <Route path="/">
+          <Home />
+        </Route>
+      </Switch>
+    </Router>
   );
 }
 
