@@ -1,25 +1,51 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import {
   BrowserRouter as Router,
   Switch,
   Route,
+  Redirect,
 } from "react-router-dom";
 import './App.css';
-import Graph from './views/Graph'
-import Home from './views/Home'
+import Graph from './containers/Graph'
+import Home from './containers/Home'
+import LoginForm from './containers/LoginForm'
+
 function App() {
   return (
     <Router>
       <Switch>
-        <Route path="/graph">
-          <Graph />
+        <PrivateRoute path="/graph">
+            <Graph />
+        </PrivateRoute>
+        <Route path="/login">
+            <LoginForm />
         </Route>
         <Route path="/">
-          <Home />
+            <Home />
         </Route>
       </Switch>
     </Router>
   );
+}
+
+function PrivateRoute({ children, ...rest }) {
+  return (
+    <Route 
+      {...rest}
+      render={({ location }) =>
+        localStorage.getItem('auth') ? (
+          children
+        ) : (
+          <Redirect
+            to={{
+              pathname: "/login",
+              state: { from: location }
+            }}
+          />
+        )
+      }
+    />
+  )
 }
 
 export default App;
