@@ -24,7 +24,7 @@ function LoginForm() {
     const [animationClassName, setAnimationClassName] = useState(null)
     let location = useLocation()
     let history = useHistory()
-    let { from } = location.state || { from: { pathname: "/" } }
+    let { from } = location.state || { from: { pathname: "/graph" } }
     let login = () => {
         if(username === "admin@sygo.com" && password === "D!n!Ch@n") {
             setAnimation1('https://thumbs.gfycat.com/WhisperedSomeIberianmidwifetoad-size_restricted.gif')

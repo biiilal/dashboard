@@ -17,11 +17,8 @@ function App() {
         <PrivateRoute path="/graph">
             <Graph />
         </PrivateRoute>
-        <Route path="/login">
-            <LoginForm />
-        </Route>
         <Route path="/">
-            <Home />
+            <LoginForm />
         </Route>
       </Switch>
     </Router>
@@ -38,7 +35,7 @@ function PrivateRoute({ children, ...rest }) {
         ) : (
           <Redirect
             to={{
-              pathname: "/login",
+              pathname: "/",
               state: { from: location }
             }}
           />

@@ -91,6 +91,10 @@ function Graph() {
     })
     const [chart3Error,setChart3Error] = useState(false)
     useEffect(()=>{
+        fetchActiveUser()
+    },[])
+    function fetchActiveUser (){
+        setActiveUserError(false)
         axios
           .get('/GetUserCountsactive')
           .then(({data})=> {
@@ -99,9 +103,13 @@ function Graph() {
           .catch(err => {
               setActiveUserError(true)
           })
-    },[])
+    }
 
     useEffect(()=>{ 
+        fetchRegisteredUser()
+    },[])
+    function fetchRegisteredUser() {
+        setRegisteredUserError(false)
         axios
           .get('/GetUserCounts')
           .then(({data})=> {
@@ -110,17 +118,17 @@ function Graph() {
           .catch(err => {
               setRegisteredUserError(true)
           })
-    },[])
-
+    }
     useEffect(()=>{
         fetchChart2Review()
+    },[])
+
+    function fetchChart2Review() {
         setChart2Data({
             ...chart2Data,
             isLoading: true
         })
-    },[])
-
-    function fetchChart2Review() {
+        setChart2Error(false)
         axios
           .get('/GetUserCountsreview')
           .then(({data})=>{
@@ -140,12 +148,12 @@ function Graph() {
                 labels: ['REVIEW','LEARNING','PERFORMANCE','CHAT','BOARD'],
                 type: 'bar',
                 datasetsLabel: 'Active User By Module',
-                review: data.todoList && data.todoList[chart2Index].ReviewUser,
+                review: data.todoList.length > 0 ? data.todoList[chart2Index] && data.todoList[chart2Index].ReviewUser : "0",
                 clientName: tempClientName,
             })
             setSelectedOption({
-                value: data.todoList[chart2Index] && data.todoList[chart2Index].ClientName,
-                label: data.todoList[chart2Index] && data.todoList[chart2Index].ClientName
+                value: data.todoList.length > 0 ? data.todoList[chart2Index] && data.todoList[chart2Index].ClientName : '',
+                label: data.todoList.length > 0 ? data.todoList[chart2Index] && data.todoList[chart2Index].ClientName : ''
             })
           })
           .catch(err => {
@@ -162,7 +170,7 @@ function Graph() {
               .then(({data})=> {
                 setChart2Data({
                     ...chart2Data,
-                    board: data.todoList.length > 0 ? data.todoList[chart2Index].PerformanceUser : "0"
+                    board: data.todoList.length > 0 ? data.todoList[chart2Index] && data.todoList[chart2Index].PerformanceUser : "0"
                 })
               })
               .catch(err => {
@@ -176,7 +184,7 @@ function Graph() {
               .then(({data})=> {
                 setChart2Data({
                     ...chart2Data,
-                    chat: data.todoList.length > 0 ? data.todoList[chart2Index].PerformanceUser : "0"
+                    chat: data.todoList.length > 0 ? data.todoList[chart2Index] && data.todoList[chart2Index].PerformanceUser : "0"
                 })
               })
               .catch(err => {
@@ -190,7 +198,7 @@ function Graph() {
               .then(({data})=> {
                 setChart2Data({
                     ...chart2Data,
-                    performance: data.todoList.length > 0 ? data.todoList[chart2Index].PerformanceUser : "0"
+                    performance: data.todoList.length > 0 ? data.todoList[chart2Index] && data.todoList[chart2Index].PerformanceUser : "0"
                 })
               })
               .catch(err => {
@@ -204,7 +212,7 @@ function Graph() {
               .then(({data})=> {
                 setChart2Data({
                     ...chart2Data,
-                    learning: data.todoList.length > 0 ? data.todoList[chart2Index].PerformanceUser : "0",
+                    learning: data.todoList.length > 0 ?  data.todoList[chart2Index] && data.todoList[chart2Index].PerformanceUser : "0",
                     isLoading: false
                 })
               })
@@ -216,10 +224,14 @@ function Graph() {
     },[chart2Data])
 
     useEffect(()=> {
+        fetchChart3Data()
+    },[])
+    function fetchChart3Data() {
         setChart3Data({
             ...chart3Data,
             isLoading: true
         })
+        setChart3Error(false)
         axios
           .get('/GetUserActivePerClient')
           .then(({data})=> {
@@ -239,9 +251,10 @@ function Graph() {
                 })
           })
           .catch(err => {
+              console.log('error')
             setChart3Error(true)
           })
-    },[])
+    }
     useEffect(()=> {
         const {data, labels, ctx, instance, isLoading} = chart3Data
         if(data && labels && !ctx && !isLoading) {
@@ -326,6 +339,25 @@ function Graph() {
         })
         setChart2IsCreate(false)
     }
+    
+    useEffect(()=> {
+        if(chart2Error){
+            setChart2Data({
+                ...chart2Data,
+                isLoading: false
+            })
+        }
+    },[chart2Error])
+
+    useEffect(()=> {
+        console.log(chart3Data,'data chart3')
+        if(chart3Error){
+            setChart3Data({
+                ...chart3Data,
+                isLoading: false
+            })
+        }
+    },[chart3Error])
     function createChart3 () {
         const {ctx, type, labels, datasetsLabel, data} = chart3Data
         setChart3Data({
@@ -413,7 +445,7 @@ function Graph() {
                         <Title>Active</Title>
                         {
                             activeUserError ? (
-                                <Icon isSmallIcon={true} src={smallError} />
+                                <Icon isSmallIcon={true} src={smallError} onClick={()=> fetchActiveUser()} style={{cursor: 'pointer'}} />
                             ):(
                                 activeUsers ? (
                                     <Content>{activeUsers && activeUsers.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")}</Content>
@@ -426,7 +458,7 @@ function Graph() {
                         <Title>Register</Title>
                         {   
                             registeredUserError ? (
-                                <Icon isSmallIcon={true} src={smallError} />
+                                <Icon isSmallIcon={true} src={smallError} onClick={()=> fetchRegisteredUser()} style={{cursor: 'pointer'}}/>
                             ):(
                                 registeredUsers ? (
                                     <Content>{registeredUsers && registeredUsers.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")}</Content>
@@ -457,13 +489,13 @@ function Graph() {
             <Row>
                 <ContainerChart isChart2={true} className="leftItem" style={{width: '40%'}}>
                     {
-                        chart2Error ? (
-                            <Icon src={errorIcon} />
+                        chart2Data.isLoading ?(
+                            <div style={{display: 'flex', justifyContent: 'center', height: '100%'}}>
+                                <div className="lds-hourglass" style={{margin: 'auto'}}></div>
+                            </div>
                         ):(
-                            chart2Data.isLoading ?(
-                                <div style={{display: 'flex', justifyContent: 'center', height: '100%'}}>
-                                    <div className="lds-hourglass" style={{margin: 'auto'}}></div>
-                                </div>
+                            chart2Error ? (
+                                <Icon src={errorIcon} onClick={()=>fetchChart2Review()} style={{cursor: 'pointer'}} />
                             ):(
                                 <>
                                     <div style={{display: 'flex', justifyContent: 'flex-end', marginBottom: '1rem', width: '100%'}}>
@@ -482,15 +514,15 @@ function Graph() {
                 </ContainerChart>
                 <ContainerChart>
                     {
-                        chart3Error ? (
-                            <Icon src={errorIcon} />
+                        chart3Data.isLoading ? (
+                            <>
+                                <div style={{display: 'flex', justifyContent: 'center', height: '100%'}}>
+                                    <div className="lds-hourglass" style={{margin: 'auto'}}></div>
+                                </div>
+                            </>
                         ):(
-                            chart3Data.isLoading ? (
-                                <>
-                                    <div style={{display: 'flex', justifyContent: 'center', height: '100%'}}>
-                                        <div className="lds-hourglass" style={{margin: 'auto'}}></div>
-                                    </div>
-                                </>
+                            chart3Error ? (
+                                <Icon src={errorIcon} onClick={()=> fetchChart3Data()} style={{cursor: 'pointer'}}/>
                             ):(
                                 <canvas ref={chart3Ref} height="200px"/>)
                         )
