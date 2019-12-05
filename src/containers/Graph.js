@@ -4,6 +4,9 @@ import Chart from 'chart.js'
 import axios from '../api/server'
 import '../style.css'
 import Select from 'react-select'
+import errorIcon from '../assets/errorIcon.png'
+import emptyChartIcon from '../assets/emptyChartIcon.png'
+import smallError from '../assets/smallError.gif'
 const Title = styled.h3`
     text-align: center;
     margin: 1rem auto;
@@ -19,6 +22,8 @@ const Row = styled.div`
     display: flex;
     justify-content: space-between;
     margin-bottom: 3rem;
+    max-height: 30vh;
+    min-height: 30vh;
 `
 const Container = styled.div`
     padding: 5rem;
@@ -37,6 +42,14 @@ const Container1 = styled.div`
 `
 const ContainerChart = styled.div`
     width: 40%;
+    display: flex;
+    justify-content: center;
+    flex-direction: ${props=> props.isChart2 ? 'column': null};
+    align-items: ${props=> props.isChart2 ? 'center': null};
+`
+const Icon = styled.img`
+    width: 70%;
+    height: ${props=> props.isSmallIcon ? '80%': '100%'};
 `
 function Graph() {
     const chart1Ref = useRef()
@@ -46,6 +59,8 @@ function Graph() {
     const chart5Ref = useRef()
     const [registeredUsers, setRegisteredUsers] = useState(null)
     const [activeUsers, setActiveUsers] = useState(null)
+    const [activeUserError, setActiveUserError] = useState(false)
+    const [registeredUserError, setRegisteredUserError] = useState(false)
     const [chart2Data, setChart2Data] = useState({
         instance: null,
         ctx: null,
@@ -58,27 +73,53 @@ function Graph() {
         performance: null, //
         learning: null, //
         options: null, //
-        clientName: null
+        clientName: null,
+        isLoading: false
     })
+    const [selectedOption, setSelectedOption] = useState(null)
     const [chart2Index, setChart2Index] = useState(0)
     const [chart2IsCreate, setChart2IsCreate] = useState(false)
+    const [chart2Error, setChart2Error] = useState(false)
+    const [chart3Data, setChart3Data] = useState({
+        instance: null,
+        ctx: null,
+        type: null,
+        labels: null,
+        datasetsLabel: null,
+        data: null,
+        isLoading: false
+    })
+    const [chart3Error,setChart3Error] = useState(false)
     useEffect(()=>{
         axios
           .get('/GetUserCountsactive')
           .then(({data})=> {
             setActiveUsers(data.todoList[chart2Index].Column1)
           })
+          .catch(err => {
+              setActiveUserError(true)
+          })
     },[])
-    useEffect(()=>{
+
+    useEffect(()=>{ 
         axios
           .get('/GetUserCounts')
           .then(({data})=> {
               setRegisteredUsers(data.todoList[chart2Index].RegisteredUsers)
           })
+          .catch(err => {
+              setRegisteredUserError(true)
+          })
     },[])
+
     useEffect(()=>{
         fetchChart2Review()
+        setChart2Data({
+            ...chart2Data,
+            isLoading: true
+        })
     },[])
+
     function fetchChart2Review() {
         axios
           .get('/GetUserCountsreview')
@@ -98,19 +139,24 @@ function Graph() {
                 options: tempData,
                 labels: ['REVIEW','LEARNING','PERFORMANCE','CHAT','BOARD'],
                 type: 'bar',
-                datasetsLabel: data.todoList[chart2Index] && data.todoList[chart2Index].ClientName,
+                datasetsLabel: 'Active User By Module',
                 review: data.todoList && data.todoList[chart2Index].ReviewUser,
-                clientName: tempClientName
+                clientName: tempClientName,
+            })
+            setSelectedOption({
+                value: data.todoList[chart2Index] && data.todoList[chart2Index].ClientName,
+                label: data.todoList[chart2Index] && data.todoList[chart2Index].ClientName
             })
           })
           .catch(err => {
-              console.log(err,'error fetch chart2Data')
+              setChart2Error(true)
+              console.log(err,'error fetch chart2Data review')
           })
     }
+
     useEffect(()=>{
-        const {options, labels, instance, type, datasetsLabel, review, board} = chart2Data
+        const {options, labels, instance, type, datasetsLabel, review, board, chat, performance, learning} = chart2Data
         if(options && labels && type && datasetsLabel && review && !board) {
-        // if(!board && !instance) {
             axios
               .get('/GetUserCountsboard')
               .then(({data})=> {
@@ -120,14 +166,11 @@ function Graph() {
                 })
               })
               .catch(err => {
-                console.log(err,'error fetch chart2Data')
+                setChart2Error(true)
+                console.log(err,'error fetch chart2Data board')
               })
         }
-    },[chart2Data])
-    useEffect(()=>{
-        const {board, chat, instance} = chart2Data
         if(board && !chat) {
-            // if(!chat && !instance) {
             axios
               .get('/GetUserCountschat')
               .then(({data})=> {
@@ -137,14 +180,11 @@ function Graph() {
                 })
               })
               .catch(err => {
-                console.log(err,'error fetch chart2Data')
+                setChart2Error(true)
+                console.log(err,'error fetch chart2Data chat')
               })
         }
-    },[chart2Data])
-    useEffect(()=>{
-        const {chat, instance, performance} = chart2Data
         if(chat && !performance) {
-            // if(!performance && !instance) {
             axios
               .get('/GetUserCountsperformance')
               .then(({data})=> {
@@ -154,67 +194,92 @@ function Graph() {
                 })
               })
               .catch(err => {
-                console.log(err,'error fetch chart2Data')
+                setChart2Error(true)
+                console.log(err,'error fetch chart2Data perfromance')
               })
         }
-    },[chart2Data])
-    useEffect(()=>{
-        const {performance, learning, instance} = chart2Data
         if(performance && !learning) {
-            // if(!learning && !instance) {
             axios
               .get('/GetUserCountslearning')
               .then(({data})=> {
                 setChart2Data({
                     ...chart2Data,
-                    learning: data.todoList.length > 0 ? data.todoList[chart2Index].PerformanceUser : "0"
+                    learning: data.todoList.length > 0 ? data.todoList[chart2Index].PerformanceUser : "0",
+                    isLoading: false
                 })
               })
               .catch(err => {
-                console.log(err,'error fetch chart2Data')
+                setChart2Error(true)
+                console.log(err,'error fetch chart2Data learning')
               })
         }
     },[chart2Data])
+
     useEffect(()=> {
-        console.log(chart2Data,'data')
-        const {ctx, type, labels, datasetsLabel, review, board, chat, performance, learning, options, instance} = chart2Data
-        if(type && labels && datasetsLabel && review && board && chat && performance && learning && options && !ctx){
+        setChart3Data({
+            ...chart3Data,
+            isLoading: true
+        })
+        axios
+          .get('/GetUserActivePerClient')
+          .then(({data})=> {
+              let clientNames = []
+              let activeCounts = []
+              data.todoList.forEach(el => {
+                  clientNames.push(el.ClientName)
+                  activeCounts.push(el.Column1)
+              })
+                setChart3Data({
+                    ...chart3Data,
+                    type: 'bar',
+                    labels: clientNames,
+                    datasetsLabel: 'Active User By Client',
+                    data: activeCounts,
+                    isLoading: false
+                })
+          })
+          .catch(err => {
+            setChart3Error(true)
+          })
+    },[])
+    useEffect(()=> {
+        const {data, labels, ctx, instance, isLoading} = chart3Data
+        if(data && labels && !ctx && !isLoading) {
+            getCtx(3)
+        }
+        if(ctx && !instance) {
+            createChart3()
+        }
+    },[chart3Data])
+
+    useEffect(()=> {
+        const {ctx, type, labels, datasetsLabel, review, board, chat, performance, learning, options, instance, isLoading} = chart2Data
+        if(type && labels && datasetsLabel && review && board && chat && performance && learning && options && !ctx && !isLoading){
             getCtx(2)
         }
         if(ctx && !instance){
-            console.log('create chart')
             createChart2()
         }
     },[chart2Data])
 
     function getCtx(index) {
         if(index === 1) {
-            // setCtx(chart1Ref.current.getContext("2d"))
-            // setChartType('line')
-            // setIndex(2)
         }
         if(index === 2) {
             setChart2Data({
                 ...chart2Data,
                 ctx: chart2Ref.current.getContext("2d")
             })
-            // setChartType('bar')
-            // setLabelsChart2(['review', 'board', 'chat', 'performance', 'learning'])
-            // setIndex(3)
         }
         if(index === 3) {
-            // setCtx(chart3Ref.current.getContext("2d"))
-            // setChartType('bar')
-            // setIndex(4)
+            setChart3Data({
+                ...chart3Data,
+                ctx: chart3Ref.current.getContext("2d")
+            })
         }
         if(index === 4) {
-            // setCtx(chart4Ref.current.getContext("2d"))
-            // setChartType('line')
-            // setIndex(5)
         }
         if(index === 5) {
-            // setCtx(chart5Ref.current.getContext("2d"))
-            // setChartType('line')
         }
     }
     function createChart2 () {
@@ -261,12 +326,60 @@ function Graph() {
         })
         setChart2IsCreate(false)
     }
-    function handleChangeOptionChart2({value}) {
-        setChart2Index(chart2Data.clientName.findIndex((el)=>  el === value ))
+    function createChart3 () {
+        const {ctx, type, labels, datasetsLabel, data} = chart3Data
+        setChart3Data({
+            ...chart3Data,
+            instance: new Chart(ctx, {
+                type: type,
+                data: { 
+                    labels: labels,
+                    datasets: [{
+                        label: datasetsLabel,
+                        backgroundColor: 'rgb(255, 99, 132)',
+                        borderColor: 'rgb(255, 99, 132)',
+                        data: data,
+                        fill: false
+                    }],
+                    order: 0
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        xAxes: [
+                        {
+                            gridLines: {
+                            display: false
+                            }
+                        }
+                        ],
+                        yAxes: [
+                        {
+                            gridLines: {
+                            display: false
+                            },
+                            ticks: {
+                                beginAtZero: true
+                            }
+                        }
+                        ]
+                    },
+                }
+            })
+        })
+        setChart2IsCreate(false)
+    }
+    function handleChangeOptionChart2(value) {
+        setChart2Index(chart2Data.clientName.findIndex((el)=>  el === value.value ))
+        setSelectedOption(value)
+        setChart2Data({
+            ...chart2Data,
+            isLoading: true
+        })
     }
     useEffect(()=> {
         if(chart2Data.instance){
-            console.log('destroy')
             chart2Data.instance.destroy()
             setChart2IsCreate(true)
             setChart2Data({
@@ -299,64 +412,99 @@ function Graph() {
                     <Container1 >
                         <Title>Active</Title>
                         {
-                            activeUsers ? (
-                                <Content>{activeUsers && activeUsers.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")}</Content>
+                            activeUserError ? (
+                                <Icon isSmallIcon={true} src={smallError} />
                             ):(
-                                <div className="lds-hourglass" style={{margin: 'auto'}}></div>)
+                                activeUsers ? (
+                                    <Content>{activeUsers && activeUsers.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")}</Content>
+                                ):(
+                                    <div className="lds-hourglass" style={{margin: 'auto'}}></div>)
+                            )
                         }
                     </Container1>
                     <Container1>
                         <Title>Register</Title>
-                        {
-                            registeredUsers ? (
-                                <Content>{registeredUsers && registeredUsers.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")}</Content>
+                        {   
+                            registeredUserError ? (
+                                <Icon isSmallIcon={true} src={smallError} />
                             ):(
-                                <div className="lds-hourglass" style={{margin: 'auto'}}></div>)
+                                registeredUsers ? (
+                                    <Content>{registeredUsers && registeredUsers.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")}</Content>
+                                ):(
+                                    <div className="lds-hourglass" style={{margin: 'auto'}}></div>)
+                            )
                         }
                     </Container1>
                     <Container1>
                         <Title>Percentage</Title>
                         {
-                            registeredUsers ? (
-                                <ContentPercentage percentage={true} active={activeUsers} register={registeredUsers} countPercentage={countPercentage}>{registeredUsers && activeUsers && countPercentage(activeUsers,registeredUsers)} %</ContentPercentage>
+                            registeredUserError || activeUserError ? (
+                                <Icon isSmallIcon={true} src={smallError} />
                             ):(
-                                <div className="lds-hourglass" style={{margin: 'auto'}}></div>)
+                                registeredUsers ? (
+                                    <ContentPercentage percentage={true} active={activeUsers} register={registeredUsers} countPercentage={countPercentage}>{registeredUsers && activeUsers && countPercentage(activeUsers,registeredUsers)} %</ContentPercentage>
+                                ):(
+                                    <div className="lds-hourglass" style={{margin: 'auto'}}></div>)
+                            )
                         }
                     </Container1>
                 </LeftItem>
                 <ContainerChart>
-                    <canvas ref={chart1Ref} height="200px"/>
+                    {/* <canvas ref={chart1Ref} height="200px"/> */}
+                    <Icon src={emptyChartIcon} />
                 </ContainerChart>
             </Row>
             <Row>
-                <ContainerChart className="leftItem" style={{width: '40%'}}>
+                <ContainerChart isChart2={true} className="leftItem" style={{width: '40%'}}>
                     {
-                        chart2Data.instance ?(
-                            <div style={{display: 'flex', justifyContent: 'flex-end', marginBottom: '1rem'}}>
-                                <div style={{width: '200px'}}>
-                                    <Select 
-                                        options={chart2Data.options}
-                                        onChange={(optionValue)=>handleChangeOptionChart2(optionValue,'chart2')}
-                                    />
-                                </div>
-                            </div>
+                        chart2Error ? (
+                            <Icon src={errorIcon} />
                         ):(
-                            <div style={{display: 'flex', justifyContent: 'center', height: '100%'}}>
-                                <div className="lds-hourglass" style={{margin: 'auto'}}></div>
-                            </div>)
+                            chart2Data.isLoading ?(
+                                <div style={{display: 'flex', justifyContent: 'center', height: '100%'}}>
+                                    <div className="lds-hourglass" style={{margin: 'auto'}}></div>
+                                </div>
+                            ):(
+                                <>
+                                    <div style={{display: 'flex', justifyContent: 'flex-end', marginBottom: '1rem', width: '100%'}}>
+                                        <div style={{width: '200px'}}>
+                                            <Select 
+                                                value={selectedOption}
+                                                options={chart2Data.options}
+                                                onChange={(optionValue)=>handleChangeOptionChart2(optionValue,'chart2')}
+                                            />
+                                        </div>
+                                    </div>
+                                    <canvas ref={chart2Ref} height="200px"/>
+                                </>)
+                        )
                     }
-                    <canvas ref={chart2Ref} height="200px"/>
                 </ContainerChart>
                 <ContainerChart>
-                    <canvas ref={chart3Ref} height="200px"/>
+                    {
+                        chart3Error ? (
+                            <Icon src={errorIcon} />
+                        ):(
+                            chart3Data.isLoading ? (
+                                <>
+                                    <div style={{display: 'flex', justifyContent: 'center', height: '100%'}}>
+                                        <div className="lds-hourglass" style={{margin: 'auto'}}></div>
+                                    </div>
+                                </>
+                            ):(
+                                <canvas ref={chart3Ref} height="200px"/>)
+                        )
+                    }
                 </ContainerChart>
             </Row>
             <Row>
                 <ContainerChart className="leftItem" style={{width: '40%'}}>
-                    <canvas ref={chart4Ref} height="200px"/>
+                    {/* <canvas ref={chart4Ref} height="200px"/> */}
+                    <Icon src={emptyChartIcon} />
                 </ContainerChart>
                 <ContainerChart>
-                    <canvas ref={chart5Ref} height="200px"/>
+                    {/* <canvas ref={chart5Ref} height="200px"/> */}
+                    <Icon src={emptyChartIcon} />
                 </ContainerChart>
             </Row>
         </Container>

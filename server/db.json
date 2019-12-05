@@ -14,34 +14,54 @@
   "GetUserCountsreview": 
     {
       "todoList": [
-        { "ClientName": "luffy", "ReviewUser": 15 },
-        { "ClientName": "zoro", "ReviewUser": 23 },
-        { "ClientName": "nami", "ReviewUser": 8 }
+        {"ClientName": "Vivere", "ReviewUser": 10},
+        {"ClientName": "Sygo", "ReviewUser": 13},
+        {"ClientName": "Synergo", "ReviewUser": 25}
       ]
     },
     "GetUserCountsboard": {
       "todoList": [
-        { "ClientName": "luffy", "PerformanceUser": 2 },
-        { "ClientName": "zoro", "PerformanceUser": 3 },
-        { "ClientName": "nami", "PerformanceUser": 6 }
+        {"ClientName": "Vivere", "PerformanceUser": 23},
+        {"ClientName": "Sygo", "PerformanceUser": 5},
+        {"ClientName": "Synergo", "PerformanceUser": 23}
       ]
     },
     "GetUserCountschat": {
       "todoList": [
+        {"ClientName": "Vivere", "PerformanceUser": 12},
+        {"ClientName": "Sygo", "PerformanceUser": 31},
+        {"ClientName": "Synergo", "PerformanceUser": 32}
       ]
     },
     "GetUserCountsperformance": {
       "todoList": [
-        { "ClientName": "luffy", "PerformanceUser": 19 },
-        { "ClientName": "zoro", "PerformanceUser": 6 },
-        { "ClientName": "nami", "PerformanceUser": 32 }
+        {"ClientName": "Vivere", "PerformanceUser": 12},
+        {"ClientName": "Sygo", "PerformanceUser": 43},
+        {"ClientName": "Synergo", "PerformanceUser": 35}
       ]
     },
     "GetUserCountslearning": {
       "todoList": [
-        { "ClientName": "luffy", "PerformanceUser": 12 },
-        { "ClientName": "zoro", "PerformanceUser": 17 },
-        { "ClientName": "nami", "PerformanceUser": 35 }
+        {"ClientName": "Vivere", "PerformanceUser": 24},
+        {"ClientName": "Sygo", "PerformanceUser": 0},
+        {"ClientName": "Synergo", "PerformanceUser": 25}
+      ]
+    },
+    "GetUserActivePerClient": {
+      "todoList": [
+        {"ClientName": "Vivere", "Column1": 10},
+        {"ClientName": "Synergo", "Column1": 25},
+        {"ClientName": "Synergo", "Column1": 25},
+        {"ClientName": "Synergo", "Column1": 25},
+        {"ClientName": "Synergo", "Column1": 25},
+        {"ClientName": "Synergo", "Column1": 25},
+        {"ClientName": "Synergo", "Column1": 25},
+        {"ClientName": "Synergo", "Column1": 25},
+        {"ClientName": "Synergo", "Column1": 25},
+        {"ClientName": "Synergo", "Column1": 25},
+        {"ClientName": "Synergo", "Column1": 25},
+        {"ClientName": "Synergo", "Column1": 25},
+        {"ClientName": "Synergo", "Column1": 25}
       ]
     }
   }
