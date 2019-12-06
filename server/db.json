@@ -2,49 +2,185 @@
   "GetUserCounts": 
     {
       "todoList": [
-        { "RegisteredUsers": "8437"}
+        { "RegisteredUsers": "14437"}
       ]
     },
   "GetUserCountsactive": 
     {
       "todoList": [
-        { "Column1": "3057"}
+        { "Column1": "8057"}
       ]
     },  
   "GetUserCountsreview": 
     {
       "todoList": [
-        {"ClientName": "Vivere", "ReviewUser": 10},
-        {"ClientName": "Sygo", "ReviewUser": 13},
-        {"ClientName": "Synergo", "ReviewUser": 25}
-      ]
+        {
+            "ClientName": "Aeonsynergoco",
+            "ReviewUser": 1
+        },
+        {
+            "ClientName": "akr",
+            "ReviewUser": 7
+        },
+        {
+            "ClientName": "avristsynergoco",
+            "ReviewUser": 2
+        },
+        {
+            "ClientName": "Binus",
+            "ReviewUser": 575
+        },
+        {
+            "ClientName": "bprpsynergoco",
+            "ReviewUser": 1
+        },
+        {
+            "ClientName": "crpciputra",
+            "ReviewUser": 1
+        },
+        {
+            "ClientName": "ev",
+            "ReviewUser": 9
+        },
+        {
+            "ClientName": "pdw",
+            "ReviewUser": 3
+        },
+        {
+            "ClientName": "rusabooksynergoco",
+            "ReviewUser": 3
+        },
+        {
+            "ClientName": "Samora",
+            "ReviewUser": 3
+        },
+        {
+            "ClientName": "viveresynergoco",
+            "ReviewUser": 71
+        },
+        {
+            "ClientName": "wintermarsynergoco",
+            "ReviewUser": 2
+        }
+    ]
     },
     "GetUserCountsboard": {
       "todoList": [
-        {"ClientName": "Vivere", "PerformanceUser": 23},
-        {"ClientName": "Sygo", "PerformanceUser": 5},
-        {"ClientName": "Synergo", "PerformanceUser": 23}
-      ]
+        {
+            "ClientName": "astra",
+            "PerformanceUser": 1
+        },
+        {
+            "ClientName": "buminusasynergoco",
+            "PerformanceUser": 3
+        },
+        {
+            "ClientName": "Ciputra",
+            "PerformanceUser": 1
+        },
+        {
+            "ClientName": "creedsynergoco",
+            "PerformanceUser": 2
+        },
+        {
+            "ClientName": "frisianflagsynergoco",
+            "PerformanceUser": 1
+        },
+        {
+            "ClientName": "mpmsynergoco",
+            "PerformanceUser": 10
+        },
+        {
+            "ClientName": "nusanticssynergoco",
+            "PerformanceUser": 1
+        },
+        {
+            "ClientName": "pdw",
+            "PerformanceUser": 8
+        },
+        {
+            "ClientName": "proberindosynergoco",
+            "PerformanceUser": 2
+        },
+        {
+            "ClientName": "viveresynergoco",
+            "PerformanceUser": 3
+        },
+        {
+            "ClientName": "wintermarsynergoco",
+            "PerformanceUser": 5
+        }
+    ]
     },
     "GetUserCountschat": {
-      "todoList": [
-        {"ClientName": "Vivere", "PerformanceUser": 12},
-        {"ClientName": "Sygo", "PerformanceUser": 31},
-        {"ClientName": "Synergo", "PerformanceUser": 32}
-      ]
+      "todoList": []
     },
     "GetUserCountsperformance": {
       "todoList": [
-        {"ClientName": "Vivere", "PerformanceUser": 12},
-        {"ClientName": "Sygo", "PerformanceUser": 43},
-        {"ClientName": "Synergo", "PerformanceUser": 35}
-      ]
+        {
+            "ClientName": "Aeonsynergoco",
+            "PerformanceUser": 18
+        },
+        {
+            "ClientName": "astra",
+            "PerformanceUser": 25
+        },
+        {
+            "ClientName": "Buccheri",
+            "PerformanceUser": 16
+        },
+        {
+            "ClientName": "buminusasynergoco",
+            "PerformanceUser": 10
+        },
+        {
+            "ClientName": "Ciputra",
+            "PerformanceUser": 45
+        },
+        {
+            "ClientName": "creedsynergoco",
+            "PerformanceUser": 1
+        },
+        {
+            "ClientName": "frisianflagsynergoco",
+            "PerformanceUser": 1
+        },
+        {
+            "ClientName": "Hpf",
+            "PerformanceUser": 3
+        },
+        {
+            "ClientName": "katasynergoco",
+            "PerformanceUser": 3
+        },
+        {
+            "ClientName": "mpmsynergoco",
+            "PerformanceUser": 8
+        },
+        {
+            "ClientName": "pdw",
+            "PerformanceUser": 10
+        },
+        {
+            "ClientName": "viveresynergoco",
+            "PerformanceUser": 185
+        },
+        {
+            "ClientName": "waresixsynergoco",
+            "PerformanceUser": 1
+        },
+        {
+            "ClientName": "wintermarsynergoco",
+            "PerformanceUser": 5
+        }
+    ]
     },
     "GetUserCountslearning": {
       "todoList": [
-        {"ClientName": "Vivere", "PerformanceUser": 24},
-        {"ClientName": "Sygo", "PerformanceUser": 0},
-        {"ClientName": "Synergo", "PerformanceUser": 25}
+        {
+          "ClientName": "astra",
+          "PerformanceUser": "16"
+        }
       ]
     },
     "GetUserActivePerClient": {

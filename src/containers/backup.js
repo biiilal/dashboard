@@ -67,10 +67,14 @@ function Graph() {
         type: null, //
         labels: null, //
         datasetsLabel: null, //
+        review: null, //
+        board: null, //
+        chat: null, //
+        performance: null, //
+        learning: null, //
         options: null, //
         clientName: null,
-        isLoading: false,
-        data: null
+        isLoading: false
     })
     const [chart2DataServer,setChart2DataServer] = useState({
         learning: null,
@@ -82,6 +86,8 @@ function Graph() {
     const [filterData, setFilterData] = useState(null)
     const [clients, setClients] = useState(null)
     const [selectedOption, setSelectedOption] = useState(null)
+    const [chart2Index, setChart2Index] = useState(0)
+    const [chart2IsCreate, setChart2IsCreate] = useState(false)
     const [chart2Error, setChart2Error] = useState(false)
     const [chart3Data, setChart3Data] = useState({
         instance: null,
@@ -96,64 +102,84 @@ function Graph() {
     useEffect(()=>{
         fetchActiveUser()
         fetchRegisteredUser()
+        fetchChart2Learning()
+        fetchChart2Review()
+        fetchChart2Performance()
+        fetchChart2Chat()
+        fetchChart2Board()
     },[])
-    useEffect(()=> {
-        const {learning, review, performance, chat, board} = chart2DataServer
-        if(!learning && !chart2Error) {
-           fetchChart2Learning() 
-        }
-        if(learning && !review && !chart2Error){
-            fetchChart2Review()
-        }
-        if(review && !performance && !chart2Error){
-            fetchChart2Performance()
-        }
-        if(performance && !chat && !chart2Error){
-            fetchChart2Chat()
-        }
-        if(chat && !board && !chart2Error){
-            fetchChart2Board()
-        }
-    },[chart2DataServer])
     function fetchActiveUser (){
         setActiveUserError(false)
         axios
           .get('/GetUserCountsactive')
           .then(({data})=> {
-            setActiveUsers(data.todoList[0].Column1)
+            setActiveUsers(data.todoList[chart2Index].Column1)
           })
           .catch(err => {
-              setChart2Error(true)
               setActiveUserError(true)
           })
     }
+
     function fetchRegisteredUser() {
         setRegisteredUserError(false)
         axios
           .get('/GetUserCounts')
           .then(({data})=> {
-              setRegisteredUsers(data.todoList[0].RegisteredUsers)
+              setRegisteredUsers(data.todoList[chart2Index].RegisteredUsers)
           })
           .catch(err => {
-              setChart2Error(true)
               setRegisteredUserError(true)
           })
     }
+
+    // function fetchChart2Review() {
+    //     setChart2Data({
+    //         ...chart2Data,
+    //         isLoading: true
+    //     })
+    //     setChart2Error(false)
+    //     axios
+    //       .get('/GetUserCountsreview')
+    //       .then(({data})=>{
+    //         let tempData = []
+    //         let tempClientName = []
+    //         data.todoList.forEach(el=>{
+    //             let obj = {
+    //                 value: el.ClientName,
+    //                 label: el.ClientName
+    //             }
+    //             tempData.push(obj)
+    //             tempClientName.push(el.ClientName)
+    //         })
+    //         setChart2Data({
+    //             ...chart2Data,
+    //             options: tempData,
+    //             labels: ['REVIEW','LEARNING','PERFORMANCE','CHAT','BOARD'],
+    //             type: 'bar',
+    //             datasetsLabel: 'Active User By Module',
+    //             review: data.todoList.length > 0 ? data.todoList[chart2Index] && data.todoList[chart2Index].ReviewUser : "0",
+    //             clientName: tempClientName,
+    //         })
+    //         setSelectedOption({
+    //             value: data.todoList.length > 0 ? data.todoList[chart2Index] && data.todoList[chart2Index].ClientName : '',
+    //             label: data.todoList.length > 0 ? data.todoList[chart2Index] && data.todoList[chart2Index].ClientName : ''
+    //         })
+    //       })
+    //       .catch(err => {
+    //           setChart2Error(true)
+    //           console.log(err,'error fetch chart2Data review')
+    //       })
+    // }
     function fetchChart2Learning() {
-        setChart2Data({
-            isLoading: true
-        })
-        setChart2Error(false)
         axios
           .get('GetUserCountslearning')
           .then(({data}) => {
             setChart2DataServer({
                 ...chart2DataServer,
-                learning: data.todoList,
+                learning: data.todoList
             })
           })
           .catch(err => {
-            setChart2Error(true)
             console.log('fetch learning error')
           })
     }
@@ -167,7 +193,6 @@ function Graph() {
             })
           })
           .catch(err => {
-            setChart2Error(true)
             console.log('fetch review error')
           })
     }
@@ -181,7 +206,6 @@ function Graph() {
             })
           })
           .catch(err => {
-            setChart2Error(true)
             console.log('fetch performance error')
           })
     }
@@ -195,7 +219,6 @@ function Graph() {
             })
           })
           .catch(err => {
-            setChart2Error(true)
             console.log('fetch chat error')
           })
     }
@@ -209,13 +232,14 @@ function Graph() {
             })
           })
           .catch(err => {
-            setChart2Error(true)
             console.log('fetch board error')
           })
     }
     useEffect (()=> {
+        console.log(chart2DataServer,'data server chart 2')
         const {learning, review, performance, chat, board} = chart2DataServer
         if(learning && review && performance && chat && board) {
+            console.log('start filter')
             let filter = {}
             learning.forEach(el=> {
                 if(!filter[el.ClientName]) {
@@ -271,33 +295,15 @@ function Graph() {
                 }
                 else filter[el.ClientName].board = el.PerformanceUser
             })
+            console.log('end filter')
             let clientsTemp = []
-            let totalLearning = 0
-            let totalReview = 0
-            let totalPerformance = 0
-            let totalChat = 0
-            let totalBoard = 0
 
             for (const key in filter) {
-                clientsTemp.push(key)
-                totalLearning += Number(filter[key].learning)
-                totalReview += Number(filter[key].review)
-                totalPerformance += Number(filter[key].performance)
-                totalChat += Number(filter[key].chat)
-                totalBoard += Number(filter[key].board)
+                clients.push(key)
             }
-            filter.all = {}
-            filter.all.learning = totalLearning 
-            filter.all.review = totalReview
-            filter.all.performance = totalPerformance
-            filter.all.chat = totalChat
-            filter.all.board = totalBoard
             setClients(clientsTemp)
             setFilterData(filter)
-            let optionTemp = [{
-                value: 'all',
-                label: 'all'
-            }]
+            let optionTemp = []
             clientsTemp.forEach(el => {
                 let obj = {
                     value: el,
@@ -310,33 +316,99 @@ function Graph() {
                 options: optionTemp
             })
             setSelectedOption({
-                value: optionTemp[1].value,
-                label: optionTemp[1].label
+                value: optionTemp[0].value,
+                label: optionTemp[0].label
             })
         }
     },[chart2DataServer])
+
     useEffect(()=> {
+        console.log(filterData,'filter data')
+        console.log(selectedOption,'seleted option')
         if(selectedOption) {
+            console.log('================')
             setChart2Data({
                 ...chart2Data,
                 type: 'bar',
                 labels: ['Learning', 'Review', 'Performance', 'Chat', 'Board'],
                 datasetsLabel: 'Active User By Module',
-                data: [filterData[selectedOption.value].learning, filterData[selectedOption.value].review, filterData[selectedOption.value].performance, filterData[selectedOption.value].chat, filterData[selectedOption.value].board],
-                isLoading: false
+                data: [filterData[selectedOption.value].learning, filterData[selectedOption.value].review, filterData[selectedOption.value].performance, filterData[selectedOption.value].chat, filterData[selectedOption.value].board]
             })
-            
         }
     }, [selectedOption])
+    
+    // useEffect(()=>{
+    //     const {options, labels, instance, type, datasetsLabel, review, board, chat, performance, learning} = chart2Data
+    //     if(options && labels && type && datasetsLabel && review && !board) {
+    //         axios
+    //           .get('/GetUserCountsboard')
+    //           .then(({data})=> {
+    //             setChart2Data({
+    //                 ...chart2Data,
+    //                 board: data.todoList.length > 0 ? data.todoList[chart2Index] && data.todoList[chart2Index].PerformanceUser : "0"
+    //             })
+    //           })
+    //           .catch(err => {
+    //             setChart2Error(true)
+    //             console.log(err,'error fetch chart2Data board')
+    //           })
+    //     }
+    //     if(board && !chat) {
+    //         axios
+    //           .get('/GetUserCountschat')
+    //           .then(({data})=> {
+    //             setChart2Data({
+    //                 ...chart2Data,
+    //                 chat: data.todoList.length > 0 ? data.todoList[chart2Index] && data.todoList[chart2Index].PerformanceUser : "0"
+    //             })
+    //           })
+    //           .catch(err => {
+    //             setChart2Error(true)
+    //             console.log(err,'error fetch chart2Data chat')
+    //           })
+    //     }
+    //     if(chat && !performance) {
+    //         axios
+    //           .get('/GetUserCountsperformance')
+    //           .then(({data})=> {
+    //             setChart2Data({
+    //                 ...chart2Data,
+    //                 performance: data.todoList.length > 0 ? data.todoList[chart2Index] && data.todoList[chart2Index].PerformanceUser : "0"
+    //             })
+    //           })
+    //           .catch(err => {
+    //             setChart2Error(true)
+    //             console.log(err,'error fetch chart2Data perfromance')
+    //           })
+    //     }
+    //     if(performance && !learning) {
+    //         axios
+    //           .get('/GetUserCountslearning')
+    //           .then(({data})=> {
+    //             setChart2Data({
+    //                 ...chart2Data,
+    //                 learning: data.todoList.length > 0 ?  data.todoList[chart2Index] && data.todoList[chart2Index].PerformanceUser : "0",
+    //                 isLoading: false
+    //             })
+    //           })
+    //           .catch(err => {
+    //             setChart2Error(true)
+    //             console.log(err,'error fetch chart2Data learning')
+    //           })
+    //     }
+    // },[chart2Data])
+
+
     useEffect(()=> {
-        const {ctx, type, labels, datasetsLabel, options, instance, isLoading} = chart2Data
-        if(type && labels && datasetsLabel && options && !ctx && !isLoading){
+        const {ctx, type, labels, datasetsLabel, review, board, chat, performance, learning, options, instance, isLoading} = chart2Data
+        if(type && labels && datasetsLabel && review && board && chat && performance && learning && options && !ctx && !isLoading){
             getCtx(2)
         }
         if(ctx && !instance){
             createChart2()
         }
     },[chart2Data])
+
     function getCtx(index) {
         if(index === 1) {
         }
@@ -358,7 +430,7 @@ function Graph() {
         }
     }
     function createChart2 () {
-        const {ctx, type, labels, datasetsLabel, data} = chart2Data
+        const {ctx, type, labels, datasetsLabel, review, learning, performance, chat, board, instance} = chart2Data
         setChart2Data({
             ...chart2Data,
             instance: new Chart(ctx, {
@@ -369,9 +441,10 @@ function Graph() {
                         label: datasetsLabel,
                         backgroundColor: 'rgb(255, 99, 132)',
                         borderColor: 'rgb(255, 99, 132)',
-                        data: data,
+                        data: [review, learning, performance, chat, board],
                         fill: false
                     }],
+                    order: 0
                 },
                 options: {
                     responsive: true,
@@ -398,7 +471,9 @@ function Graph() {
                 }
             })
         })
+        setChart2IsCreate(false)
     }
+    
     useEffect(()=> {
         if(chart2Error){
             setChart2Data({
@@ -407,20 +482,6 @@ function Graph() {
             })
         }
     },[chart2Error])
-    function handleChangeOptionChart2(value) {
-        if(value !== selectedOption){
-            chart2Data.instance.destroy()
-            setSelectedOption(value)
-            setChart2Data({
-                ...chart2Data,
-                isLoading: true,
-                data: null,
-                ctx: null,
-                instance: null
-            })
-        }
-    }
-
     useEffect(()=> {
         fetchChart3Data()
     },[])
@@ -449,6 +510,7 @@ function Graph() {
                 })
           })
           .catch(err => {
+              console.log('error')
             setChart3Error(true)
           })
     }
@@ -461,6 +523,7 @@ function Graph() {
             createChart3()
         }
     },[chart3Data])
+
     useEffect(()=> {
         if(chart3Error){
             setChart3Data({
@@ -484,6 +547,7 @@ function Graph() {
                         data: data,
                         fill: false
                     }],
+                    order: 0
                 },
                 options: {
                     responsive: true,
@@ -510,7 +574,34 @@ function Graph() {
                 }
             })
         })
+        setChart2IsCreate(false)
     }
+    function handleChangeOptionChart2(value) {
+        setChart2Index(chart2Data.clientName.findIndex((el)=>  el === value.value ))
+        setSelectedOption(value)
+        setChart2Data({
+            ...chart2Data,
+            isLoading: true
+        })
+    }
+    useEffect(()=> {
+        if(chart2Data.instance){
+            chart2Data.instance.destroy()
+            setChart2IsCreate(true)
+            setChart2Data({
+                ...chart2Data,
+                review: null,
+                board: null,
+                chat: null,
+                performance: null,
+                learning: null,
+                ctx: null,
+                instance: null,
+                type: null,
+                labels: null
+            })
+        }
+    },[chart2Index])
     function countPercentage(active,register) {
         let result = Math.round(Number(active) / Number(register) * 100)
         return result
@@ -573,7 +664,7 @@ function Graph() {
                             </div>
                         ):(
                             chart2Error ? (
-                                <Icon src={errorIcon} onClick={()=> fetchChart2Learning()} style={{cursor: 'pointer'}} />
+                                <Icon src={errorIcon}  style={{cursor: 'pointer'}} />
                             ):(
                                 <>
                                     <div style={{display: 'flex', justifyContent: 'flex-end', marginBottom: '1rem', width: '100%'}}>
@@ -581,7 +672,7 @@ function Graph() {
                                             <Select 
                                                 value={selectedOption}
                                                 options={chart2Data.options}
-                                                onChange={(optionValue)=>handleChangeOptionChart2(optionValue)}
+                                                onChange={(optionValue)=>handleChangeOptionChart2(optionValue,'chart2')}
                                             />
                                         </div>
                                     </div>
