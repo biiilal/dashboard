@@ -26,6 +26,7 @@ function App() {
 }
 
 function PrivateRoute({ children, ...rest }) {
+  console.log('private route')
   return (
     <Route 
       {...rest}

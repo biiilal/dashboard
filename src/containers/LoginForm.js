@@ -1,7 +1,7 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import {
     useHistory,
-    useLocation
+    useLocation,
   } from "react-router-dom";
 import styled from 'styled-components'
 import '../style.css'
@@ -38,7 +38,9 @@ function LoginForm() {
             setPassword('')
         }   
     };
-    
+    if(localStorage.getItem('auth')){
+        history.push('/graph')
+    }
     return (
         <div className="loginForm">
             <div className="container" style={{padding: '5rem', display: 'flex', justifyContent: 'center'}}>
