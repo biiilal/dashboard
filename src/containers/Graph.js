@@ -26,7 +26,7 @@ const Row = styled.div`
     min-height: 30vh;
 `
 const Container = styled.div`
-    padding: 5rem;
+    padding: 3rem;
 `
 const LeftItem = styled.div`
     height: 100%;
@@ -41,7 +41,7 @@ const Container1 = styled.div`
     flex-direction: column
 `
 const ContainerChart = styled.div`
-    width: 40%;
+    width: ${props=> props.isEmpty ? '30%' : '45%'};
     display: flex;
     justify-content: center;
     flex-direction: ${props=> props.isChart2 ? 'column': null};
@@ -52,6 +52,7 @@ const Icon = styled.img`
     height: ${props=> props.isSmallIcon ? '80%': '100%'};
 `
 function Graph() {
+    const chart0Ref = useRef()
     const chart1Ref = useRef()
     const chart2Ref = useRef()
     const chart3Ref = useRef()
@@ -61,6 +62,14 @@ function Graph() {
     const [activeUsers, setActiveUsers] = useState(null)
     const [activeUserError, setActiveUserError] = useState(false)
     const [registeredUserError, setRegisteredUserError] = useState(false)
+    const [chart0Data, setChart0Data] = useState({
+        instance: null,
+        ctx: null,
+        type: null,
+        labels: null,
+        datasetsLabel: null,
+        data: null
+    })
     const [chart2Data, setChart2Data] = useState({
         instance: null,
         ctx: null,
@@ -139,6 +148,47 @@ function Graph() {
               setRegisteredUserError(true)
           })
     }
+    useEffect(()=>{
+        if(activeUsers && registeredUsers){
+            setChart0Data({
+                ...chart0Data,
+                type: 'pie',
+                data: [Number(activeUsers), Number(registeredUsers)],
+                labels: ['Active Users', 'Register Users']
+            })
+        }
+    },[activeUsers, registeredUsers])
+    useEffect(()=> {
+        const {type, data, labels, ctx, instance} = chart0Data
+        if(type && data && labels && !ctx ){
+            getCtx(0)
+        }
+        if(ctx && !instance) {
+            createChart0()
+        }
+    },[chart0Data])
+    function createChart0 () {
+        const {ctx, type, labels, datasetsLabel, data} = chart0Data
+        setChart0Data({
+            ...chart0Data,
+            instance: new Chart(ctx, {
+                type: type,
+                data: { 
+                    labels: labels,
+                    datasets: [{
+                        backgroundColor: ['#1E90FF','rgb(255, 99, 132)'],
+                        borderColor: ['#1E90FF','rgb(255, 99, 132)'],
+                        data: data,
+                    }],
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                }
+            })
+        })
+    }
+
     function fetchChart2Learning() {
         setChart2Data({
             isLoading: true
@@ -338,6 +388,12 @@ function Graph() {
         }
     },[chart2Data])
     function getCtx(index) {
+        if(index === 0) {
+            setChart0Data({
+                ...chart0Data,
+                ctx: chart0Ref.current.getContext("2d")
+            })
+        }
         if(index === 1) {
         }
         if(index === 2) {
@@ -441,7 +497,7 @@ function Graph() {
               })
                 setChart3Data({
                     ...chart3Data,
-                    type: 'bar',
+                    type: 'horizontalBar',
                     labels: clientNames,
                     datasetsLabel: 'Active User By Client',
                     data: activeCounts,
@@ -516,7 +572,7 @@ function Graph() {
         return result
     }
     return (
-        <Container className="container" style={{padding: '5rem'}}>
+        <Container className="container">
             <Row>
                 <LeftItem>
                     <Container1 >
@@ -559,7 +615,10 @@ function Graph() {
                         }
                     </Container1>
                 </LeftItem>
-                <ContainerChart>
+                <div style={{width: '30%', display: 'flex', justifyContent: 'center'}}>
+                        <canvas ref={chart0Ref} height="200px"/>
+                </div>
+                <ContainerChart isEmpty={true}>
                     {/* <canvas ref={chart1Ref} height="200px"/> */}
                     <Icon src={emptyChartIcon} />
                 </ContainerChart>
@@ -608,11 +667,11 @@ function Graph() {
                 </ContainerChart>
             </Row>
             <Row>
-                <ContainerChart className="leftItem" style={{width: '40%'}}>
+                <ContainerChart isEmpty={true} className="leftItem">
                     {/* <canvas ref={chart4Ref} height="200px"/> */}
                     <Icon src={emptyChartIcon} />
                 </ContainerChart>
-                <ContainerChart>
+                <ContainerChart isEmpty={true}>
                     {/* <canvas ref={chart5Ref} height="200px"/> */}
                     <Icon src={emptyChartIcon} />
                 </ContainerChart>
