@@ -199,5 +199,69 @@
         {"ClientName": "Synergo", "Column1": 25},
         {"ClientName": "Synergo", "Column1": 25}
       ]
+    },
+    "transactions": {
+        "todoList":[
+            {
+                "Client": "Ciputra",
+                "Counts": "2",
+                "Type": "Review",
+                "Period": "2020-03-12T13:30:53.387"
+            },
+            {
+                "Client": "Ciputra",
+                "Counts": "2",
+                "Type": "Subgoal",
+                "Period": "2020-03-12T13:30:53.387"
+            },
+            {
+                "Client": "Ciputra",
+                "Counts": "2",
+                "Type": "Checkin",
+                "Period": "2020-03-12T13:30:53.387"
+            },
+            {
+                "Client": "Ciputra",
+                "Counts": "2",
+                "Type": "Calendar",
+                "Period": "2020-03-12T13:30:53.39"
+            },
+            {
+                "Client": "Ciputra",
+                "Counts": "2",
+                "Type": "Praise",
+                "Period": "2020-03-12T13:30:53.39"
+            },
+            {
+                "Client": "Ciputra",
+                "Counts": "2",
+                "Type": "Workflows",
+                "Period": "2020-03-12T13:30:53.39"
+            },
+            {
+                "Client": "Ciputra",
+                "Counts": "2",
+                "Type": "Cards",
+                "Period": "2020-03-12T13:30:53.39"
+            },
+            {
+                "Client": "Ciputra",
+                "Counts": "2",
+                "Type": "Channels",
+                "Period": "2020-03-12T13:30:53.39"
+            },
+            {
+                "Client": "Astra",
+                "Counts": "20",
+                "Type": "Channels",
+                "Period": "2020-03-12T13:30:53.39"
+            },
+            {
+                "Client": "Astra",
+                "Counts": "30",
+                "Type": "Channels",
+                "Period": "2020-04-12T13:30:53.39"
+            }
+        ]
     }
   }
